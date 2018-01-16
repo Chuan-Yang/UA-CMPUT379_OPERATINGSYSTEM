@@ -1,0 +1,66 @@
+#include "../findpattern.c"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// quote from https://gcc.gnu.org/onlinedocs/cpp/Stringification.html
+#define xstr(s) str(s)
+#define str(s) #s
+#ifndef input_pattern
+#define input_pattern ""
+#endif
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+
+int main(int argc, char **argv){
+
+	unsigned int loclength = 10;
+	struct patmatch *locations = malloc(sizeof(struct patmatch) * loclength);
+    int i = 0;
+
+	// char *pattern = xstr(input_pattern);
+	// unsigned int patlength = strlen(pattern); 
+
+ 	char *modify_heap = malloc ((loclength)*(strlen(argv[1]) + 1) * sizeof(char));
+
+	printf("Test1\n");
+    	printf("Directly check the input pattern\n");
+
+	unsigned int match_num=0;
+   	//printf ("%c %p\n", (*modify_heap), modify_heap);
+	match_num = findpattern ((unsigned char *)argv[1], strlen(argv[1]), locations, loclength);
+
+	printf("\nPass 1\n");
+	printf("Total Matches: %d\n", match_num);
+	
+	for (i = 0; i < min(match_num,loclength); i++){
+		if (locations[i].mode == 1)
+			printf("0x%.8X\tMEM_RO\n", locations[i].location);
+		else
+			printf("0x%.8X\tMEM_RW\n", locations[i].location);
+	}
+	printf("\n");
+
+	memcpy(modify_heap,argv[1],strlen(argv[1]));
+
+	printf("Test2\n");
+    	printf("Save the pattern into heap by using malloc\n");
+
+	match_num=0;
+   	 //printf ("%c %p\n", (*modify_heap), modify_heap);
+	match_num = findpattern ((unsigned char *)argv[1], strlen(argv[1]), locations, loclength);
+
+	printf("\nPass 2\n");
+	printf("Total Matches: %d\n", match_num);
+	
+	for (i = 0; i < min(match_num,loclength); i++){
+		if (locations[i].mode == 1)
+			printf("0x%.8X\tMEM_RO\n", locations[i].location);
+		else
+			printf("0x%.8X\tMEM_RW\n", locations[i].location);
+	}
+	printf("\n");
+		
+	free(modify_heap);
+	return 0;
+}
+

@@ -1,0 +1,12 @@
+Test1
+Directly check the input pattern
+
+Pass 1
+Total Matches: 0
+
+Test2
+Save the pattern into heap by using malloc
+
+Pass 2
+Total Matches: 0
+
